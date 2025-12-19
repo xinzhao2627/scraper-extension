@@ -1,34 +1,35 @@
-import { sendMessage } from "./content";
-
 export default defineBackground(() => {
 	// console.log("Hello background!", { id: browser.runtime.id });
 
 	browser.runtime.onInstalled.addListener((details) => {
 		console.log("extensio installed: ", details);
+	});
+	// this runs when a tab is fully rendered
+	browser.tabs.onUpdated.addListener((tabId, changeInfo) => {
+		try {
+			if (changeInfo.status === "complete") {
+				browser.tabs.get(tabId).then(async (tab) => {
+					const url = tab.url;
 
-		// this runs when a tab is fully rendered
-		browser.tabs.onUpdated.addListener((tabId, changeInfo) => {
-			try {
-				if (changeInfo.status === "complete") {
-					browser.tabs.get(tabId).then(async (tab) => {
-						const feedback = await sendMessage(
-							"retrieveHtml",
-							undefined,
-							tab.id
-						);
+					if (url && url.includes("reddit.com")) {
+						const url_json = url.endsWith("/")
+							? url + ".json"
+							: url + "/.json";
 
-						if (feedback.status != 200) {
-							console.log("cant fetch HTML");
-							return;
+						const response = await fetch(url_json);
+
+						if (response.ok) {
+							const result = await response.json();
+							console.log(result);
+
+							// send the json to springboot server
+							// TODO
 						}
-
-						// send the subset html to springboot server
-						// TODO
-					});
-				}
-			} catch (error) {
-				console.error("error onActivated: ", error);
+					}
+				});
 			}
-		});
+		} catch (error) {
+			console.error("error onActivated: ", error);
+		}
 	});
 });

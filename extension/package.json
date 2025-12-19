@@ -16,10 +16,12 @@
 	},
 	"dependencies": {
 		"@webext-core/messaging": "^2.3.0",
+		"json-query": "^2.2.2",
 		"react": "^19.2.3",
 		"react-dom": "^19.2.3"
 	},
 	"devDependencies": {
+		"@types/json-query": "^2.2.6",
 		"@types/react": "^19.2.7",
 		"@types/react-dom": "^19.2.3",
 		"@wxt-dev/module-react": "^1.1.5",
