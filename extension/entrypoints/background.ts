@@ -24,6 +24,8 @@ function getBody(data: any, collections: string[]): string[] {
 
 export default defineBackground(() => {
 	// console.log("Hello background!", { id: browser.runtime.id });
+	const BACKEND_URL =
+		import.meta.env.VITE_BACKEND_URL ?? "http://localhost:8080";
 
 	browser.runtime.onInstalled.addListener((details) => {
 		console.log("extension installed: ", details);
@@ -35,7 +37,12 @@ export default defineBackground(() => {
 				browser.tabs.get(tabId).then(async (tab) => {
 					const url = tab.url;
 
-					if (url && url.includes("reddit.com")) {
+					if (
+						url &&
+						url.includes("reddit.com") &&
+						!url.endsWith("json") &&
+						!url.endsWith("json/")
+					) {
 						const url_json = url.endsWith("/")
 							? url + ".json"
 							: url + "/.json";
@@ -51,7 +58,14 @@ export default defineBackground(() => {
 							console.log("the json: " + collections);
 
 							// send the json to springboot server
-							// TODO
+							fetch(BACKEND_URL, {
+								method: "POST",
+								body: JSON.stringify({ data: result }),
+								headers: {
+									"Content-type":
+										"application/json; charset-UTF-8",
+								},
+							});
 						}
 					}
 				});
