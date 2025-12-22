@@ -36,6 +36,7 @@ function App() {
 			<button disabled={loading} onClick={handleScrape}>
 				{loading ? "Scraping..." : "Scrape"}
 			</button>
+			{message && <p>{message}</p>}
 		</div>
 	);
 }
