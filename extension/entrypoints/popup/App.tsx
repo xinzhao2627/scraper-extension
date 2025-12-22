@@ -1,39 +1,42 @@
 import { useState } from "react";
-import reactLogo from "@/assets/react.svg";
-import wxtLogo from "/wxt.svg";
+import { defineExtensionMessaging } from "@webext-core/messaging";
+
 import "./App.css";
+interface BackgroundProtocolMap {
+	scrapeCurrentTab(): Promise<{ success: boolean; error?: string }>;
+}
+
+const { sendMessage } = defineExtensionMessaging<BackgroundProtocolMap>();
 
 function App() {
-	const apiurl = import.meta.env.VITE_API_URL;
-	const [count, setCount] = useState(0);
-
+	const [loading, setLoading] = useState(false);
+	const [message, setMessage] = useState("");
+	const handleScrape = async function () {
+		setLoading(true);
+		setMessage("");
+		try {
+			const res = await sendMessage("scrapeCurrentTab", undefined);
+			if (res.success) {
+				setMessage("Scraping completed");
+			} else {
+				setMessage("error: " + res.error);
+			}
+		} catch (error) {
+			setMessage(
+				`Error: ${
+					error instanceof Error ? error.message : String(error)
+				}`
+			);
+		}
+		setLoading(false);
+	};
 	return (
-		<>
-			<div>
-				<a href="https://wxt.dev" target="_blank">
-					<img src={wxtLogo} className="logo" alt="WXT logo" />
-				</a>
-				<a href="https://react.dev" target="_blank">
-					<img
-						src={reactLogo}
-						className="logo react"
-						alt="React logo"
-					/>
-				</a>
-			</div>
-			<h1>WXT + React</h1>
-			<div className="card">
-				<button onClick={() => setCount((count) => count + 1)}>
-					count is {count}
-				</button>
-				<p>
-					Edit <code>src/App.tsx</code> and save to test HMR
-				</p>
-			</div>
-			<p className="read-the-docs">
-				Click on the WXT and React logos to learn more
-			</p>
-		</>
+		<div>
+			<h1>Reddit scraper</h1>
+			<button disabled={loading} onClick={handleScrape}>
+				{loading ? "Scraping..." : "Scrape"}
+			</button>
+		</div>
 	);
 }
 

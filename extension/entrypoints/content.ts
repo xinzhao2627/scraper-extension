@@ -9,8 +9,8 @@ export interface Feedback {
 	error: string;
 }
 
-export const { sendMessage, onMessage } =
-	defineExtensionMessaging<ProtocolMap>();
+// export const { sendMessage, onMessage } =
+// 	defineExtensionMessaging<ProtocolMap>();
 
 export default defineContentScript({
 	matches: ["http://*/*", "https://*/*"],
@@ -18,21 +18,21 @@ export default defineContentScript({
 		console.log("Hello content.");
 
 		// sample only
-		onMessage("retrieveHtml", (message) => {
-			try {
-				return {
-					status: 200,
-					data: "",
-					error: "",
-				};
-			} catch (error) {
-				return {
-					status: 400,
-					data: "",
-					error: errorify(error),
-				};
-			}
-		});
+		// onMessage("retrieveHtml", (message) => {
+		// 	try {
+		// 		return {
+		// 			status: 200,
+		// 			data: "",
+		// 			error: "",
+		// 		};
+		// 	} catch (error) {
+		// 		return {
+		// 			status: 400,
+		// 			data: "",
+		// 			error: errorify(error),
+		// 		};
+		// 	}
+		// });
 	},
 });
 
