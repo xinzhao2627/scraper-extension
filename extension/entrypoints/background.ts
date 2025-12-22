@@ -22,7 +22,9 @@ export default defineBackground(() => {
 		});
 
 		if (tab.url) {
-			// await getData(tab.url);
+			// COMMENT OR UNCOMMENT FOR TESTING
+
+			await getData(tab.url);
 			return { success: true };
 		}
 
@@ -52,7 +54,7 @@ async function getData(url: string) {
 			// send the json to springboot server
 			fetch(BACKEND_URL, {
 				method: "POST",
-				body: JSON.stringify({ data: collections }),
+				body: JSON.stringify({ data: collections, url: url }),
 				headers: {
 					"Content-type": "application/json; charset-UTF-8",
 				},
@@ -80,6 +82,9 @@ function recursive_replies_fetcher(replies: any, collections: string[]) {
 	const bodySection = replies["data"]["children"];
 
 	for (const b of bodySection) {
+		if ((b["author"] as string).toLowerCase() === "automoderator") {
+			continue;
+		}
 		const data = b["data"];
 		const text = data["body"];
 
@@ -105,6 +110,12 @@ function getBody(data: any, collections: string[]): string[] {
 	const commentsSection = data[1]["data"]["children"];
 
 	for (const comment of commentsSection) {
+		if (
+			(comment["data"]["author"] as string).toLowerCase() ===
+			"automoderator"
+		) {
+			continue;
+		}
 		const text = comment["data"]["body"] as string;
 
 		const replies = comment["data"]["replies"];
