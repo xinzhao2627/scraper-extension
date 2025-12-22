@@ -82,7 +82,11 @@ function recursive_replies_fetcher(replies: any, collections: string[]) {
 	const bodySection = replies["data"]["children"];
 
 	for (const b of bodySection) {
-		if ((b["author"] as string).toLowerCase() === "automoderator") {
+		const author = b["data"]["author"];
+		if (
+			typeof author === "string" &&
+			author.toLowerCase() === "automoderator"
+		) {
 			continue;
 		}
 		const data = b["data"];
@@ -110,9 +114,10 @@ function getBody(data: any, collections: string[]): string[] {
 	const commentsSection = data[1]["data"]["children"];
 
 	for (const comment of commentsSection) {
+		const author = comment["data"]["author"];
 		if (
-			(comment["data"]["author"] as string).toLowerCase() ===
-			"automoderator"
+			typeof author === "string" &&
+			author.toLowerCase() === "automoderator"
 		) {
 			continue;
 		}
